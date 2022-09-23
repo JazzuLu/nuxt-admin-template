@@ -151,7 +151,6 @@ i:not([class~="pi"]) {
     font-family: Monaco, courier, monospace;
     font-style: normal;
     font-size: 12px;
-    font-weight: 500;
     padding: 0 4px;
     letter-spacing: .5px;
     font-weight: 600;

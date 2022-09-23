@@ -46,6 +46,13 @@ export default {
           }]
         },
         {
+          label: 'Admin',
+          items: [
+            { label: '用户管理', icon: 'pi pi-fw pi-user-edit', to: '/admin/user' },
+            { label: '活动管理', icon: 'pi pi-fw pi-home', to: '/admin/activity' }
+          ]
+        },
+        {
           label: 'UI Components',
           icon: 'pi pi-fw pi-sitemap',
           items: [
