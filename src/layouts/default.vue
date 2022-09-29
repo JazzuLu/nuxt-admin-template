@@ -42,14 +42,15 @@ export default {
         {
           label: 'Home',
           items: [{
-            label: 'Dashboard', icon: 'pi pi-fw pi-home', to: '/'
+            label: '仪表盘', icon: 'pi pi-fw pi-home', to: '/'
           }]
         },
         {
           label: 'Admin',
           items: [
             { label: '用户管理', icon: 'pi pi-fw pi-user-edit', to: '/admin/user' },
-            { label: '活动管理', icon: 'pi pi-fw pi-home', to: '/admin/activity' }
+            { label: '活动管理', icon: 'pi pi-fw pi-home', to: '/admin/activity' },
+            { label: '商品管理', icon: 'pi pi-fw pi-tags', to: '/admin/goods' }
           ]
         },
         {
@@ -84,7 +85,6 @@ export default {
           label: 'Pages',
           icon: 'pi pi-fw pi-clone',
           items: [
-            { label: 'Crud', icon: 'pi pi-fw pi-user-edit', to: '/demo/pages/crud' },
             { label: 'Timeline', icon: 'pi pi-fw pi-calendar', to: '/demo/pages/timeline' },
             { label: 'Landing', icon: 'pi pi-fw pi-calendar', to: '/demo/pages/landing' },
             { label: 'Login', icon: 'pi pi-fw pi-sign-in', to: '/login' },

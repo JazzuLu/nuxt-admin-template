@@ -10,7 +10,14 @@
     "lint:fix": "eslint --fix --ext .js,.ts,.vue --ignore-path .gitignore ."
   },
   "dependencies": {
-    "pinia": "^2.0.21"
+    "@tiptap/extension-character-count": "^2.0.0-beta.196",
+    "@tiptap/extension-highlight": "^2.0.0-beta.196",
+    "@tiptap/extension-task-item": "^2.0.0-beta.196",
+    "@tiptap/extension-task-list": "^2.0.0-beta.196",
+    "@tiptap/starter-kit": "^2.0.0-beta.196",
+    "@tiptap/vue-3": "^2.0.0-beta.196",
+    "pinia": "^2.0.21",
+    "remixicon": "^2.5.0"
   },
   "devDependencies": {
     "@nuxt/test-utils": "^3.0.0-rc.8",

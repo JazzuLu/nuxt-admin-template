@@ -24,7 +24,13 @@ module.exports = {
     'vue/no-v-html': 'off',
     'vue/no-v-model-argument': 'off',
     'vue/no-template-shadow': 'off',
-    'vue/multi-word-component-names': 'off'
+    'vue/multi-word-component-names': 'off',
+    quotes: ['off', 'single', 'avoid-escape'],
+    'no-irregular-whitespace': 'off',
+    'object-curly-spacing': 'warn',
+    'no-unused-vars': 'off',
+    'semi-colon': 'off',
+    '@typescript-eslint/no-unused-vars': 'warn'
   },
   overrides: [
     {

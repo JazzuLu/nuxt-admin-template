@@ -1,152 +1,183 @@
 <template>
-  <div>
-    <template v-for="(item, index) in items">
-      <div class="divider" v-if="item.type === 'divider'" :key="`divider${index}`" />
-      <menu-item v-else :key="index" v-bind="item" />
-    </template>
-  </div>
+  <client-only>
+    <div v-if="editor" class="editor">
+      <menu-bar class="editor__header" :editor="editor" />
+      <editor-content class="editor__content" :editor="editor" />
+    </div>
+  </client-only>
 </template>
 
-
 <script setup>
-import MenuItem from './MenuItem.vue'
-import {ref} from "vue";
 
+import CharacterCount from '@tiptap/extension-character-count'
+import Highlight from '@tiptap/extension-highlight'
+import TaskItem from '@tiptap/extension-task-item'
+import TaskList from '@tiptap/extension-task-list'
+import StarterKit from '@tiptap/starter-kit'
+import { useEditor, EditorContent } from "@tiptap/vue-3"
+import { onBeforeUnmount, onMounted, watch } from "vue"
+import MenuBar from './MenuBar.vue'
 
-defineProps({
-  editor: Object,
+const props = defineProps({
+  modelValue: {
+    type: String,
+    default: ''
+  }
 })
 
-const items = ref([
-  {
-    icon: 'bold',
-    title: 'Bold',
-    action: () => editor.chain().focus().toggleBold().run(),
-    isActive: () => editor.isActive('bold'),
-  },
-  {
-    icon: 'italic',
-    title: 'Italic',
-    action: () => editor.chain().focus().toggleItalic().run(),
-    isActive: () => editor.isActive('italic'),
-  },
-  {
-    icon: 'strikethrough',
-    title: 'Strike',
-    action: () => editor.chain().focus().toggleStrike().run(),
-    isActive: () => editor.isActive('strike'),
-  },
-  {
-    icon: 'code-view',
-    title: 'Code',
-    action: () => editor.chain().focus().toggleCode().run(),
-    isActive: () => editor.isActive('code'),
-  },
-  {
-    icon: 'mark-pen-line',
-    title: 'Highlight',
-    action: () => editor.chain().focus().toggleHighlight().run(),
-    isActive: () => editor.isActive('highlight'),
-  },
-  {
-    type: 'divider',
-  },
-  {
-    icon: 'h-1',
-    title: 'Heading 1',
-    action: () => editor.chain().focus().toggleHeading({ level: 1 }).run(),
-    isActive: () => editor.isActive('heading', { level: 1 }),
-  },
-  {
-    icon: 'h-2',
-    title: 'Heading 2',
-    action: () => editor.chain().focus().toggleHeading({ level: 2 }).run(),
-    isActive: () => editor.isActive('heading', { level: 2 }),
-  },
-  {
-    icon: 'paragraph',
-    title: 'Paragraph',
-    action: () => editor.chain().focus().setParagraph().run(),
-    isActive: () => editor.isActive('paragraph'),
-  },
-  {
-    icon: 'list-unordered',
-    title: 'Bullet List',
-    action: () => editor.chain().focus().toggleBulletList().run(),
-    isActive: () => editor.isActive('bulletList'),
-  },
-  {
-    icon: 'list-ordered',
-    title: 'Ordered List',
-    action: () => editor.chain().focus().toggleOrderedList().run(),
-    isActive: () => editor.isActive('orderedList'),
-  },
-  {
-    icon: 'list-check-2',
-    title: 'Task List',
-    action: () => editor.chain().focus().toggleTaskList().run(),
-    isActive: () => editor.isActive('taskList'),
-  },
-  {
-    icon: 'code-box-line',
-    title: 'Code Block',
-    action: () => editor.chain().focus().toggleCodeBlock().run(),
-    isActive: () => editor.isActive('codeBlock'),
-  },
-  {
-    type: 'divider',
-  },
-  {
-    icon: 'double-quotes-l',
-    title: 'Blockquote',
-    action: () => editor.chain().focus().toggleBlockquote().run(),
-    isActive: () => editor.isActive('blockquote'),
-  },
-  {
-    icon: 'separator',
-    title: 'Horizontal Rule',
-    action: () => editor.chain().focus().setHorizontalRule().run(),
-  },
-  {
-    type: 'divider',
-  },
-  {
-    icon: 'text-wrap',
-    title: 'Hard Break',
-    action: () => editor.chain().focus().setHardBreak().run(),
-  },
-  {
-    icon: 'format-clear',
-    title: 'Clear Format',
-    action: () => editor.chain()
-      .focus()
-      .clearNodes()
-      .unsetAllMarks()
-      .run(),
-  },
-  {
-    type: 'divider',
-  },
-  {
-    icon: 'arrow-go-back-line',
-    title: 'Undo',
-    action: () => editor.chain().focus().undo().run(),
-  },
-  {
-    icon: 'arrow-go-forward-line',
-    title: 'Redo',
-    action: () => editor.chain().focus().redo().run(),
-  },
-])
+const emit = defineEmits(['update:modelValue'])
 
+const editor = useEditor({
+  content: props.modelValue,
+  extensions: [
+    StarterKit.configure({
+      history: false
+    }),
+    Highlight,
+    TaskList,
+    TaskItem,
+    CharacterCount.configure({
+      limit: 10000
+    })
+  ],
+  onUpdate () {
+    emit('update:modelValue', editor.value.getHTML())
+  }
+})
+
+watch(props, (p) => {
+  const value = p.modelValue
+  // HTML
+  const isSame = editor.value.getHTML() === value
+
+  // JSON
+  // const isSame = JSON.stringify(this.editor.getJSON()) === JSON.stringify(value)
+
+  if (isSame) { return }
+  editor.value.commands.setContent(value, false)
+})
+
+onBeforeUnmount(() => {
+  editor.value.destroy()
+})
 </script>
 
 <style scoped lang="scss">
-.divider {
-  width: 2px;
-  height: 1.25rem;
-  background-color: rgba(#000, 0.1);
-  margin-left: 0.5rem;
-  margin-right: 0.75rem;
+.editor {
+  display: flex;
+  flex-direction: column;
+  color: #0D0D0D;
+  background-color: #FFF;
+  border: 1px solid #ced4da;
+  border-radius: 0.5rem;
+
+  &__header {
+    display: flex;
+    align-items: center;
+    flex: 0 0 auto;
+    flex-wrap: wrap;
+    padding: 0.25rem;
+    border-bottom: 1px solid #ced4da;
+  }
+
+  &__content {
+    padding: 1.25rem 1rem;
+    flex: 1 1 auto;
+    overflow-x: hidden;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+}
+</style>
+
+<style lang="scss">
+/* Basic editor styles */
+.ProseMirror {
+  height: 100%;
+  > * + * {
+    margin-top: 0.75em;
+  }
+
+  &:focus-visible{
+    outline: none!important;
+  }
+
+  ul,
+  ol {
+    padding: 0 1rem;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    line-height: 1.1;
+  }
+
+  code {
+    background-color: rgba(#616161, 0.1);
+    color: #616161;
+  }
+
+  pre {
+    background: #0D0D0D;
+    color: #FFF;
+    font-family: 'JetBrainsMono', monospace;
+    padding: 0.75rem 1rem;
+    border-radius: 0.5rem;
+
+    code {
+      color: inherit;
+      padding: 0;
+      background: none;
+      font-size: 0.8rem;
+    }
+  }
+
+  mark {
+    background-color: #FAF594;
+  }
+
+  img {
+    max-width: 100%;
+    height: auto;
+  }
+
+  hr {
+    margin: 1rem 0;
+  }
+
+  blockquote {
+    padding-left: 1rem;
+    border-left: 2px solid rgba(#0D0D0D, 0.1);
+  }
+
+  hr {
+    border: none;
+    border-top: 2px solid rgba(#0D0D0D, 0.1);
+    margin: 2rem 0;
+  }
+
+  ul[data-type="taskList"] {
+    list-style: none;
+    padding: 0;
+
+    li {
+      display: flex;
+      align-items: center;
+
+      > label {
+        flex: 0 0 auto;
+        margin-right: 0.5rem;
+        user-select: none;
+      }
+
+      > div {
+        flex: 1 1 auto;
+      }
+    }
+  }
 }
 </style>
